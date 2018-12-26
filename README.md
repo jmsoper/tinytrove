@@ -1,5 +1,6 @@
 # tinytrove
 A tiny toy database in C
+
 ![duck swimming in gold coins](https://media.giphy.com/media/gQdejV5BBChHi/giphy.gif)
 
 - [ ] User can write entries to database
