@@ -3,11 +3,11 @@
 
 struct Task {
   char name[21];
-  int score;
+  int status;
 };
 
 void writeEntry(struct Task * task, FILE *file){
-  fprintf(file, "%s %d\n", task->name, task->score);
+  fprintf(file, "%s %d\n", task->name, task->status);
 }
 
 void collectEntries(struct Task * task, char * filename){
@@ -18,8 +18,8 @@ void collectEntries(struct Task * task, char * filename){
   while(strcmp(answer, "n")!=0){
     printf("Name: ");
     scanf("%s", task->name);
-    printf("Score: ");
-    scanf("%d", &task->score);
+    printf("Status [enter 1 for complete, or 0 for incomplete]: ");
+    scanf("%d", &task->status);
     writeEntry(task, pFile);
     printf("Would you like to add another task? [y/n]?");
     scanf("%s", answer);
@@ -28,7 +28,7 @@ void collectEntries(struct Task * task, char * filename){
 }
 
 int readEntry(struct Task * task, FILE *file){
-  if(fscanf(file, "%s %d\n", task->name, &task->score)==EOF){
+  if(fscanf(file, "%s %d\n", task->name, &task->status)==EOF){
     return 0;
   } else {
     return 1;
@@ -44,6 +44,7 @@ int findEntryByName(struct Task * task, FILE *file, char * name){
   // if you *do* find it, signify so you can...break the loop?
   // we need a "check entry" function to simplify this. maybe.
   // if you *do* find an entry, *leave it* so that we have the attributes of the found item. print it out.
+  return 0;
 }
 
 /*
@@ -64,7 +65,13 @@ void readAllEntries(struct Task * task, char * filename){
   pFile = fopen(filename, "r");  
 
   while (readEntry(task, pFile)){
-    printf("%s %d\n", task->name, task->score);
+    char status;
+    if (task->status==0){
+      status = ' ';
+    } else {
+      status = 'x';
+    }
+    printf("[%c] %s\n", status, task->name);
     // Can we pass a reference to a function to call here?
   }
 }
@@ -115,19 +122,16 @@ void deleteEntry(){
   //same as above, but just omit it. --> memory will be a lil more nuanced (w indices)
 }
 
-// all of this will be accomplished with text commands, which is a pain in the ass.
-// we can do better -- with ncurses!!
-
 int main(int argc, char *argv[]){
   char *filename="data.txt";
   struct Task task;
   char command[10];
-  char * help="To add a task or tasks, type in 'add.' To read entries, type in 'read'. To end the program, type in 'exit'.\n";
+  char * help="To add a task or tasks, type in 'add.' To read a list of existing tasks, type in 'read'. To end the program, type in 'exit'.\n";
   struct Task allTasks[100]; //Max number of tasks = 100. Maybe non-sequential storage?
 
   //first, we read the data into memory.
   readToMemory(filename, allTasks);   
-  readAllFromMemory(all);
+  readAllFromMemory(allTasks);
   printf("%s", help);
   do {
     scanf("%s", command);
